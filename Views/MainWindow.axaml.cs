@@ -476,14 +476,21 @@ public partial class MainWindow : Window
             // === 檢查分號漏寫 ===
             for (int i = 0; i < lines.Length; i++)
             {
-                var trimmed = lines[i].Trim();
+                // 先移除註解，再 Trim
+                var lineContent = lines[i];
+                var commentIndex = lineContent.IndexOf("//");
+                if (commentIndex >= 0)
+                {
+                    lineContent = lineContent.Substring(0, commentIndex);
+                }
+                var trimmed = lineContent.Trim();
+
                 // 忽略空行、註解、預處理、大括號、函數標頭等
                 if (string.IsNullOrEmpty(trimmed) ||
-                    trimmed.StartsWith("//") ||
                     trimmed.StartsWith("#") ||
                     trimmed.StartsWith("{") ||
                     trimmed.StartsWith("}") ||
-                    CKeywords.Contains(trimmed.Split('(')[0].Trim()))
+                    CKeywords.Any(kw => trimmed.StartsWith(kw))) // 寬鬆一點，避免函數標頭誤判
                 {
                     continue;
                 }
