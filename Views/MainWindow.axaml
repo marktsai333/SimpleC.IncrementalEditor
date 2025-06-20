@@ -58,6 +58,9 @@
                 <TextBox Name="CodeTextBox"
                          AcceptsReturn="True"
                          FontFamily="JetBrains Mono"
+                         FontSize="15"
+                         LineHeight="22"
+                         Padding="15,15,15,15"
                          VerticalAlignment="Stretch"
                          HorizontalAlignment="Stretch"
                          KeyUp="CodeTextBox_KeyUp"/>
