@@ -13,18 +13,33 @@ namespace SimpleC.IncrementalEditor.Views
         public string LineNumber { get; set; } = "";
         public string Content { get; set; } = "";
         public bool HasError { get; set; } = false;
+
+        // 行首空白 / tab，用於對齊
+        public string Indent  
+        {
+            get
+            {
+                int i = 0;
+                while (i < Content.Length && (Content[i] == ' ' || Content[i] == '\t')) i++;
+                return Content[..i];
+            }
+        }
+        // 旗幟 + 行號用
         public string DisplayText => $"[#{LineNumber}] {Content}";
         public string ErrorIndicator => HasError ? "🚩" : "";
 
-        // 高亮部份
+        // 關鍵字高亮 – 不再 TrimStart，所以縮排保留
+        private static readonly string[] kw =
+            { "int", "float", "double", "char", "if", "else", "while", "for", "return" };
+
         public string HighlightPrefix
         {
             get
             {
-                var kw = new[] { "int", "float", "double", "char", "if", "else", "while", "for", "return" };
+                var trimmed = Content.TrimStart();
                 foreach (var k in kw)
-                    if (Content.TrimStart().StartsWith(k + " "))
-                        return Content.TrimStart().Substring(0, k.Length);
+                    if (trimmed.StartsWith(k + " "))
+                        return k;
                 return "";
             }
         }
@@ -33,13 +48,8 @@ namespace SimpleC.IncrementalEditor.Views
             get
             {
                 var prefix = HighlightPrefix;
-                if (!string.IsNullOrEmpty(prefix))
-                {
-                    var idx = Content.IndexOf(prefix);
-                    if (idx >= 0)
-                        return Content.Substring(idx + prefix.Length);
-                }
-                return Content;
+                if (string.IsNullOrEmpty(prefix)) return Content.TrimStart();
+                return Content.TrimStart().Substring(prefix.Length);
             }
         }
     }
@@ -320,6 +330,11 @@ namespace SimpleC.IncrementalEditor.Views
             for (int i = 0; i < lines.Length; i++)
             {
                 var line = lines[i].Trim();
+                // ----- 把 // 之後的註解去掉 -----
+                var cmtIdx = line.IndexOf("//");
+                if (cmtIdx >= 0) line = line.Substring(0, cmtIdx).Trim();
+                if (string.IsNullOrWhiteSpace(line)) continue;
+
                 var currentLineNum = i + 1;
 
                 if (string.IsNullOrWhiteSpace(line)) continue;
@@ -502,6 +517,10 @@ namespace SimpleC.IncrementalEditor.Views
             for (int i = 0; i < lines.Length; i++)
             {
                 var line = lines[i].TrimStart();
+                // 去掉行內 // 註解，避免註解文字被當成關鍵字
+                var cmt = line.IndexOf("//");
+                if (cmt >= 0) line = line.Substring(0, cmt).TrimStart();
+
                 if (string.IsNullOrWhiteSpace(line)) continue;
                 var firstToken = line.Split(new[] { ' ', ';', '(', ')', '{', '}', '=' }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
                 if (!string.IsNullOrEmpty(firstToken) && firstToken.Length > 2 && !CKeywords.Contains(firstToken))

@@ -1,34 +1,82 @@
-<Window xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:local="clr-namespace:SimpleC.IncrementalEditor.Views"
-        xmlns:views="clr-namespace:SimpleC.IncrementalEditor.Views"
-        x:Class="SimpleC.IncrementalEditor.Views.MainWindow"
-        Title="SimpleC Incremental DFA Editor" Width="1000" Height="600">
-    <Grid ColumnDefinitions="2*,6*,2*">
-        <!-- 左側：Template 區塊 -->
-        <StackPanel Grid.Column="0" Margin="10">
-            <TextBlock Text="Template 區塊" FontWeight="Bold" Margin="0,0,0,10"/>
-            <ListBox Name="TemplateListBox" Height="500" SelectionChanged="TemplateListBox_SelectionChanged">
+<Window
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:views="clr-namespace:SimpleC.IncrementalEditor.Views"
+    x:Class="SimpleC.IncrementalEditor.Views.MainWindow"
+    Title="SimpleC Incremental DFA Editor" Width="1000" Height="600">
+
+    <!-- 左：3*　分隔條：5　中：5*　右：2* -->
+    <Grid ColumnDefinitions="3*,5,5*,2*">
+
+        <!-- ▌Template 區塊 ── 用 Grid ⇢ 撐滿高度 -->
+        <Grid Grid.Column="0" Margin="10"
+              RowDefinitions="Auto,*">
+
+            <!-- 標題 -->
+            <TextBlock Text="Template 區塊"
+                       FontWeight="Bold"
+                       Margin="0,0,0,10"/>
+
+            <!-- ListBox：吃滿剩餘高度 -->
+            <ListBox Grid.Row="1"
+                     Name="TemplateListBox"
+                     HorizontalAlignment="Stretch"
+                     VerticalAlignment="Stretch"
+                     ScrollViewer.VerticalScrollBarVisibility="Auto">
                 <ListBox.ItemTemplate>
                     <DataTemplate DataType="views:CodeLine">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="{Binding ErrorIndicator}" FontSize="16" Margin="0,0,2,0"/>
-                            <TextBlock FontFamily="JetBrains Mono">
+
+                        <!-- ▲ 兩欄：旗幟寬 20px / 程式碼 -->
+                        <Grid ColumnDefinitions="20,*"
+                              Margin="0,2">
+
+                            <!-- 旗幟 - 暗一點的紅色 -->
+                            <TextBlock
+                                Text="{Binding ErrorIndicator}"
+                                Foreground="#c33"
+                                FontSize="14"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"/>
+
+                            <!-- 程式碼 -->
+                            <TextBlock Grid.Column="1"
+                                       FontFamily="JetBrains Mono"
+                                       TextWrapping="NoWrap">
                                 <TextBlock.Inlines>
+
+                                    <!-- 行號 -->
                                     <Run Text="[#"/>
-                                    <Run Text="{Binding LineNumber}" Foreground="Gray"/>
+                                    <Run Text="{Binding LineNumber}"
+                                         Foreground="#777"/>
                                     <Run Text="] "/>
-                                    <Run Text="{Binding HighlightPrefix}" Foreground="Blue" FontWeight="Bold"/>
-                                    <Run Text="{Binding HighlightSuffix}" />
+
+                                    <!-- 縮排（空白 / tab） -->
+                                    <Run Text="{Binding Indent}"/>
+
+                                    <!-- 關鍵字（藍 /粗） -->
+                                    <Run Text="{Binding HighlightPrefix}"
+                                         Foreground="#3366ff"
+                                         FontWeight="SemiBold"/>
+
+                                    <Run Text="{Binding HighlightSuffix}"/>
+
                                 </TextBlock.Inlines>
                             </TextBlock>
-                        </StackPanel>
+                        </Grid>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
-        </StackPanel>
-        <!-- 中間：程式碼編輯區 -->
-        <StackPanel Grid.Column="1" Margin="10">
+        </Grid>
+
+        <!-- ▌可拖曳分隔線 -->
+        <GridSplitter Grid.Column="1"
+                      Width="5"
+                      HorizontalAlignment="Stretch"
+                      Background="#ddd"
+                      ShowsPreview="True"/>
+
+        <!-- 中間：程式碼編輯區（Grid 取代 StackPanel）-->
+        <StackPanel Grid.Column="2" Margin="10">
             <TextBlock Text="程式碼編輯區" FontWeight="Bold" Margin="0,0,0,10"/>
             <Grid>
                 <TextBox Name="CodeTextBox"
@@ -48,24 +96,40 @@
             <Button Name="AnalyzeButton"
                     Content="執行分析"
                     Margin="0,10,0,0"
-                    Height="32"/>
+                    Height="32"
+                    HorizontalAlignment="Left"/>
         </StackPanel>
-        <!-- 右側：異常標註 -->
-        <StackPanel Grid.Column="2" Margin="10">
-            <TextBlock Text="資料流異常標註" FontWeight="Bold" Margin="0,0,0,10"/>
-            <ListBox Name="AnomalyListBox" Height="250">
+
+        <!-- ▌右側：錯誤 + AST -->
+        <StackPanel Grid.Column="3" Margin="10">
+            <TextBlock Text="資料流異常標註"
+                       FontWeight="Bold"
+                       Margin="0,0,0,10"/>
+
+            <ListBox Name="AnomalyListBox"
+                     Height="250"
+                     ScrollViewer.VerticalScrollBarVisibility="Auto">
                 <ListBox.ItemTemplate>
                     <DataTemplate x:DataType="x:String">
-                        <TextBlock Text="{Binding .}" TextWrapping="Wrap" MaxWidth="200"/>
+                        <TextBlock Text="{Binding .}"
+                                   TextWrapping="Wrap"
+                                   MaxWidth="200"/>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
 
-            <!-- NEW: AST Viewer Section -->
-            <Button Name="ToggleAstButton" Content="顯示/隱藏 AST" Margin="0,10,0,5"/>
-            <TreeView Name="AstTreeView" Height="235" IsVisible="False">
+            <Button Name="ToggleAstButton"
+                    Content="顯示 / 隱藏 AST"
+                    Margin="0,10,0,5"
+                    Width="120"/>
+
+            <TreeView Name="AstTreeView"
+                      Height="235"
+                      IsVisible="False">
                 <TreeView.ItemTemplate>
-                    <TreeDataTemplate x:DataType="views:AstNode" ItemsSource="{Binding Children}">
+                    <TreeDataTemplate
+                        x:DataType="views:AstNode"
+                        ItemsSource="{Binding Children}">
                         <TextBlock Text="{Binding DisplayText}"/>
                     </TreeDataTemplate>
                 </TreeView.ItemTemplate>
