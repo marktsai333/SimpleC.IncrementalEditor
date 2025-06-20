@@ -63,8 +63,8 @@ namespace SimpleC.IncrementalEditor.Views
         public string DisplayText => string.IsNullOrEmpty(Value) ? NodeType : $"{NodeType}: {Value}";
     }
 
-    public partial class MainWindow : Window
-    {
+public partial class MainWindow : Window
+{
         // ======== 自動補全 相關欄位 =========
         private List<string> autoCompleteCandidates = new();
         private int autoCompleteStart = -1;
@@ -229,9 +229,9 @@ namespace SimpleC.IncrementalEditor.Views
                 && token.All(c => char.IsLetterOrDigit(c) || c == '_')
                 && !char.IsDigit(token[0]);
 
-        public MainWindow()
-        {
-            InitializeComponent();
+    public MainWindow()
+    {
+        InitializeComponent();
 
             // Set ItemsSource in code-behind
             TemplateListBox.ItemsSource = codeLines;
@@ -292,9 +292,15 @@ namespace SimpleC.IncrementalEditor.Views
         private void ToggleAstButton_Click(object? sender, RoutedEventArgs e)
         {
             AstTreeView.IsVisible = !AstTreeView.IsVisible;
+            if (AstTreeView.IsVisible && lastAstRoot != null)
+            {
+                AstTreeView.ItemsSource = new[] { lastAstRoot };
+            }
         }
 
         // ========= Main analysis logic (Refactored) =========
+        private AstNode? lastAstRoot = null;
+
         private void AnalyzeButton_Click(object? sender, RoutedEventArgs e)
         {
             AnomalyListBox.ItemsSource = null;
@@ -508,6 +514,7 @@ namespace SimpleC.IncrementalEditor.Views
             UpdateTemplateListBox(errorLines);
 
             // Update the AST TreeView
+            lastAstRoot = rootNode;
             AstTreeView.ItemsSource = new[] { rootNode };
         }
 
