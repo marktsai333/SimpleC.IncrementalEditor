@@ -1,0 +1,24 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleC.IncrementalEditor", "SimpleC.IncrementalEditor.csproj", "{3F16D375-4B8E-572A-558B-C59F5C6D7A5A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3F16D375-4B8E-572A-558B-C59F5C6D7A5A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F16D375-4B8E-572A-558B-C59F5C6D7A5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F16D375-4B8E-572A-558B-C59F5C6D7A5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F16D375-4B8E-572A-558B-C59F5C6D7A5A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {1DE6E5F0-5EA9-4AB4-A602-76C1C5CD6DD5}
+	EndGlobalSection
+EndGlobal

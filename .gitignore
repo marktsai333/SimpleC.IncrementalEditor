@@ -1,0 +1,17 @@
+## General
+/bin/
+/obj/
+.DS_Store
+
+## Visual Studio
+.vs/
+*.suo
+*.user
+
+## Rider / Resharper
+.idea/
+*.sln.DotSettings.user
+
+## User-specific
+*.lock.json
+/Properties/launchSettings.json 

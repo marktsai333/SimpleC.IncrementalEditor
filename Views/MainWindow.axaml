@@ -1,0 +1,75 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:SimpleC.IncrementalEditor.Views"
+        xmlns:views="clr-namespace:SimpleC.IncrementalEditor.Views"
+        x:Class="SimpleC.IncrementalEditor.Views.MainWindow"
+        Title="SimpleC Incremental DFA Editor" Width="1000" Height="600">
+    <Grid ColumnDefinitions="2*,6*,2*">
+        <!-- 左側：Template 區塊 -->
+        <StackPanel Grid.Column="0" Margin="10">
+            <TextBlock Text="Template 區塊" FontWeight="Bold" Margin="0,0,0,10"/>
+            <ListBox Name="TemplateListBox" Height="500" SelectionChanged="TemplateListBox_SelectionChanged">
+                <ListBox.ItemTemplate>
+                    <DataTemplate DataType="views:CodeLine">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding ErrorIndicator}" FontSize="16" Margin="0,0,2,0"/>
+                            <TextBlock FontFamily="JetBrains Mono">
+                                <TextBlock.Inlines>
+                                    <Run Text="[#"/>
+                                    <Run Text="{Binding LineNumber}" Foreground="Gray"/>
+                                    <Run Text="] "/>
+                                    <Run Text="{Binding HighlightPrefix}" Foreground="Blue" FontWeight="Bold"/>
+                                    <Run Text="{Binding HighlightSuffix}" />
+                                </TextBlock.Inlines>
+                            </TextBlock>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </StackPanel>
+        <!-- 中間：程式碼編輯區 -->
+        <StackPanel Grid.Column="1" Margin="10">
+            <TextBlock Text="程式碼編輯區" FontWeight="Bold" Margin="0,0,0,10"/>
+            <Grid>
+                <TextBox Name="CodeTextBox"
+                         AcceptsReturn="True"
+                         Height="500"
+                         FontFamily="JetBrains Mono"
+                         KeyUp="CodeTextBox_KeyUp"/>
+                <ListBox Name="AutoCompleteListBox"
+                        IsVisible="False"
+                        Height="120"
+                        Width="160"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        Margin="30,30,0,0"
+                        SelectionChanged="AutoCompleteListBox_SelectionChanged"/>
+            </Grid>
+            <Button Name="AnalyzeButton"
+                    Content="執行分析"
+                    Margin="0,10,0,0"
+                    Height="32"/>
+        </StackPanel>
+        <!-- 右側：異常標註 -->
+        <StackPanel Grid.Column="2" Margin="10">
+            <TextBlock Text="資料流異常標註" FontWeight="Bold" Margin="0,0,0,10"/>
+            <ListBox Name="AnomalyListBox" Height="250">
+                <ListBox.ItemTemplate>
+                    <DataTemplate x:DataType="x:String">
+                        <TextBlock Text="{Binding .}" TextWrapping="Wrap" MaxWidth="200"/>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+
+            <!-- NEW: AST Viewer Section -->
+            <Button Name="ToggleAstButton" Content="顯示/隱藏 AST" Margin="0,10,0,5"/>
+            <TreeView Name="AstTreeView" Height="235" IsVisible="False">
+                <TreeView.ItemTemplate>
+                    <TreeDataTemplate x:DataType="views:AstNode" ItemsSource="{Binding Children}">
+                        <TextBlock Text="{Binding DisplayText}"/>
+                    </TreeDataTemplate>
+                </TreeView.ItemTemplate>
+            </TreeView>
+        </StackPanel>
+    </Grid>
+</Window>
